@@ -4,7 +4,7 @@ namespace ApmPresentation
 {
     public class Instrumentation : IDisposable
     {
-        public static readonly string ApmPresentationService = "ApmPresentation";
+        public static readonly string ApmPresentationService = "MainApp";
 
         public Instrumentation()
         {
@@ -15,7 +15,7 @@ namespace ApmPresentation
 
         public void Dispose()
         {
-            ActivitySource.Dispose();
+            ActivitySource?.Dispose();
         }
     }
 }
