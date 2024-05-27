@@ -2,20 +2,8 @@
 
 namespace LocationService
 {
-    public class Instrumentation : IDisposable
+    public static class Instrumentation
     {
         public static readonly string LocationService = "LocationService";
-
-        public Instrumentation()
-        {
-            ActivitySource = new(LocationService);
-        }
-
-        public ActivitySource ActivitySource { get; }
-
-        public void Dispose()
-        {
-            ActivitySource.Dispose();
-        }
     }
 }

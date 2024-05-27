@@ -1,19 +1,10 @@
+using System.Diagnostics;
 using LocationService;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<Instrumentation>();
+builder.AddServiceDefaults();
 builder.Services.AddTransient<ILocationProvider, LocationProvider>();
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(resource => resource.AddService(Instrumentation.LocationService))
-    .WithTracing(tracing =>
-    {
-        tracing.AddHttpClientInstrumentation();
-        tracing.AddAspNetCoreInstrumentation();
-        tracing.AddConsoleExporter();
-    });
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -21,6 +12,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -31,13 +24,19 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/locations", async (ILocationProvider locationProvider, Instrumentation instrumentation) =>
+app.MapGet("/locations", async (ILocationProvider locationProvider) =>
 {
-    using var activity = instrumentation.ActivitySource.StartActivity("Get the locations");
-    activity?.SetTag("locationProvider", locationProvider.GetType().Name);
-    return await locationProvider.GetLocationsAsync();
+    using var activity = Activity.Current?.Source?.StartActivity("Get the locations");
+    activity?.SetTag("locationProvider", "Some Value");
+
+    var locations = await locationProvider.GetLocationsAsync();
+
+    using var _ = Activity.Current?.Source?.StartActivity("Some extra stuff done");
+    await Task.Delay(1000);
+
+    return locations;
 })
-.WithName("GeLocations")
+.WithName("GetLocations")
 .WithOpenApi();
 
 app.Run();

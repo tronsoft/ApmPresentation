@@ -9,12 +9,17 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="OpenTelemetry" Version="1.8.1" />
     <PackageReference Include="OpenTelemetry.Api.ProviderBuilderExtensions" Version="1.8.1" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.8.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.8.1" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ApmPresentation.ServiceDefaults\ApmPresentation.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>
