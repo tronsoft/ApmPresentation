@@ -14,6 +14,7 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.AddServiceDefaults();
 builder.Services.AddSingleton<Instrumentation>();
 builder.Services.AddHttpClient("Locations", client => client.BaseAddress = new Uri("https://locationservice"));
+builder.Services.AddHttpClient("WeatherService", client => client.BaseAddress = new Uri("https://weatherservice"));
 
 using var tracerProvider = Sdk.CreateTracerProviderBuilder()
     .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Instrumentation.ApmPresentationService))
@@ -38,6 +39,11 @@ using (var activity = instrumentation.ActivitySource.StartActivity("Main"))
     {
         Console.WriteLine(location);
     }
+
+    // get the weather forecast
+    response = await httpClientFactory.CreateClient("WeatherService").GetAsync("weatherforecast");
+    response.EnsureSuccessStatusCode();
+    using var weatherStream = await response.Content.ReadAsStreamAsync();
 }
 Console.ReadKey();
 
